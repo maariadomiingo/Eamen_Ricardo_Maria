@@ -52,7 +52,7 @@ class Nombre
                 throw new Exception('Not Found');
             }
         } catch (Exception $e) {
-            echo 'Excepción: ' . $e->getMessage();
+            throw $e;
         }
     }
 
