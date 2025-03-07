@@ -1,44 +1,46 @@
 <?php
-require_once './src/NombreBBDD.php';
+use PHPUnit\Framework\TestCase;
 
-try {
-    $nombre = new Nombre();
-    $conexion = $nombre->conectarBD();
-    
-    if ($conexion) {
-        echo "Conexión exitosa a la base de datos y tabla creadas.\n";
-        
-        // Prueba 1: Insertar un nombre
-        $insertado = $nombre->introduceNombre('Juan');
-        if ($insertado) {
-            echo "Nombre 'Juan' insertado correctamente.\n";
-        }
-        
-        // Prueba 2: Verificar si existe un nombre
-        $existe = $nombre->compruebaNombre('Juan');
-        if ($existe) {
-            echo "Nombre 'Juan' existe en la base de datos.\n";
-        }
-        
-        // Prueba 3: Eliminar un nombre
-        $eliminado = $nombre->borraNombre('Juan');
-        if ($eliminado) {
-            echo "Nombre 'Juan' eliminado correctamente.\n";
-        }
-        
-        // Prueba 4: Verificar un nombre que no existe
-        try {
-            $nombre->compruebaNombre('Pedro');
-        } catch (NotFoundException $e) {
-            echo $e->getMessage() . "\n";
-        }
-        
-        $nombre->desconectarBD();
-        echo "Conexión cerrada con éxito.\n";
-    } else {
-        echo "No se pudo establecer la conexión.\n";
+require_once 'src/NombreBBDD.php'; // Incluir la clase
+
+class NombreTest extends TestCase
+{
+    private $nombre;
+
+    // Configurar antes de cada prueba
+    protected function setUp(): void
+    {
+        $this->nombre = new Nombre();
     }
-} catch (Exception $e) {
-    echo "Error: " . $e->getMessage() . "\n";
+
+    // Probar la inserción de un nombre en la base de datos
+    public function testIntroduceNombre()
+    {
+        $this->nombre->introduceNombre("Juan");
+        $this->expectNotToPerformAssertions(); // No hay una salida visible, pero si no hay errores, pasa
+    }
+
+    // Probar la eliminación de un nombre de la base de datos
+    public function testBorraNombre()
+    {
+        $this->nombre->borraNombre("Juan");
+        $this->expectNotToPerformAssertions(); // No hay una salida visible, pero si no hay errores, pasa
+    }
+
+    // Probar que lanza la excepción cuando el nombre no se encuentra
+    public function testCompruebaNombreNotFound()
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Not Found');
+        
+        // Probar un nombre que no existe en la base de datos
+        $this->nombre->compruebaNombre("NombreInexistente");
+    }
+
+    // Cerrar la conexión después de cada prueba
+    protected function tearDown(): void
+    {
+        $this->nombre->closeConnection();
+    }
 }
 ?>
