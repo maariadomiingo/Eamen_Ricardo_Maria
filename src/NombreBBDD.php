@@ -4,62 +4,79 @@ class Nombre
 {
     private $conn;
 
-    // Establece la conexión con la base de datos
     public function __construct()
     {
-        try {
-            // Establece la conexión a la base de datos "usuarios"
-            $this->conn = new PDO('mysql:host=localhost;dbname=usuarios', 'root', 'password'); // Cambia "root" y "password" por tus credenciales
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            echo 'Error de conexión: ' . $e->getMessage();
+        $servidor = "localhost";
+        $usuario = "root";
+        $password = "";
+        $base_datos = "usuarios";
+
+        // Conexión a MySQL
+        $this->conn = new mysqli($servidor, $usuario, $password);
+
+        if ($this->conn->connect_error) {
+            die("Error de conexión: " . $this->conn->connect_error);
+        }
+
+        // Verificar si la base de datos existe
+        $sql = "SHOW DATABASES LIKE '$base_datos'";
+        $resultado = $this->conn->query($sql);
+
+        if ($resultado->num_rows == 0) {
+            // Crear la base de datos si no existe
+            $sql = "CREATE DATABASE $base_datos";
+            if (!$this->conn->query($sql)) {
+                die("Error al crear la base de datos: " . $this->conn->error);
+            }
+        }
+
+        // Seleccionar la base de datos
+        $this->conn->select_db($base_datos);
+
+        // Crear la tabla `clientes` si no existe
+        $sql = "CREATE TABLE IF NOT EXISTS clientes (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nombre VARCHAR(255) NOT NULL
+        )";
+
+        if (!$this->conn->query($sql)) {
+            die("Error al crear la tabla: " . $this->conn->error);
         }
     }
 
-    // Introduce un nombre en la base de datos
     public function introduceNombre($nombre)
     {
-        try {
-            $stmt = $this->conn->prepare("INSERT INTO clientes (nombre) VALUES (:nombre)");
-            $stmt->bindParam(':nombre', $nombre);
-            $stmt->execute();
-        } catch (PDOException $e) {
-            echo 'Error al insertar el nombre: ' . $e->getMessage();
-        }
+        $stmt = $this->conn->prepare("INSERT INTO clientes (nombre) VALUES (?)");
+        $stmt->bind_param("s", $nombre);
+        $stmt->execute();
+        $stmt->close();
     }
 
-    // Borra un nombre de la base de datos
     public function borraNombre($nombre)
     {
-        try {
-            $stmt = $this->conn->prepare("DELETE FROM clientes WHERE nombre = :nombre");
-            $stmt->bindParam(':nombre', $nombre);
-            $stmt->execute();
-        } catch (PDOException $e) {
-            echo 'Error al eliminar el nombre: ' . $e->getMessage();
-        }
+        $stmt = $this->conn->prepare("DELETE FROM clientes WHERE nombre = ?");
+        $stmt->bind_param("s", $nombre);
+        $stmt->execute();
+        $stmt->close();
     }
 
-    // Comprueba si un nombre existe en la base de datos
     public function compruebaNombre($nombre)
     {
-        try {
-            $stmt = $this->conn->prepare("SELECT * FROM clientes WHERE nombre = :nombre");
-            $stmt->bindParam(':nombre', $nombre);
-            $stmt->execute();
-            
-            if ($stmt->rowCount() == 0) {
-                throw new Exception('Not Found');
-            }
-        } catch (Exception $e) {
-            throw $e;
+        $stmt = $this->conn->prepare("SELECT * FROM clientes WHERE nombre = ?");
+        $stmt->bind_param("s", $nombre);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows == 0) {
+            throw new Exception('Not Found');
         }
+
+        $stmt->close();
     }
 
-    // Cierra la conexión con la base de datos
     public function closeConnection()
     {
-        $this->conn = null;
+        $this->conn->close();
     }
 }
 
