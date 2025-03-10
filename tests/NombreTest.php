@@ -1,4 +1,5 @@
 <?php
+//@author: María Domingo
 use PHPUnit\Framework\TestCase;
 
 require_once 'C:/xampp/htdocs/PHPUnit_Ricardo_Maria/src/NombreBBDD.php'; // Incluir la clase
@@ -7,7 +8,8 @@ class NombreTest extends TestCase
 {
     private $nombre;
 
-    // Configurar antes de cada prueba
+    // configuro antes de cada prueba 
+    //utilizo setUp (requerido)
     protected function setUp(): void
     {
         try {
@@ -17,21 +19,21 @@ class NombreTest extends TestCase
         }
     }
 
-    // Probar la inserción de un nombre en la base de datos
+    // pruebp que se ha incluido un nombre en la base de datos
     public function testIntroduceNombre()
     {
         $this->nombre->introduceNombre("Juan");
         $this->expectNotToPerformAssertions();
     }
 
-    // Probar la eliminación de un nombre de la base de datos
+    // pruebo la eliminación de un nombre de la base de datos
     public function testBorraNombre()
     {
         $this->nombre->borraNombre("Juan");
         $this->expectNotToPerformAssertions();
     }
 
-    // Probar que lanza la excepción cuando el nombre no se encuentra
+    // pruebp que lanza la excepción cuando el nombre no se encuentra
     public function testCompruebaNombreNotFound()
     {
         $this->expectException(Exception::class);
@@ -40,7 +42,7 @@ class NombreTest extends TestCase
         $this->nombre->compruebaNombre("NombreInexistente");
     }
 
-    // Cerrar la conexión después de cada prueba
+    // cieror la conexión después de cada prueba con tearDown
     protected function tearDown(): void
     {
         $this->nombre->closeConnection();

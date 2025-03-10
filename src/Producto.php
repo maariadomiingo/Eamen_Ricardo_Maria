@@ -1,6 +1,6 @@
 <?php
 // Producto.php
-
+//@authotr:Ricardo Gómez 
 class Producto {
     private $id;
     private $nombre;

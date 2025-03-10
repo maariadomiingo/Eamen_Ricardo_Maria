@@ -1,5 +1,5 @@
 <?php
-
+//@author: María Domingo
 class Nombre
 {
     private $conn;
@@ -18,22 +18,22 @@ class Nombre
             die("Error de conexión: " . $this->conn->connect_error);
         }
 
-        // Verificar si la base de datos existe
+        // verifico si la base de datos existe
         $sql = "SHOW DATABASES LIKE '$base_datos'";
         $resultado = $this->conn->query($sql);
 
         if ($resultado->num_rows == 0) {
-            // Crear la base de datos si no existe
+            // creo la base de datos si no existe
             $sql = "CREATE DATABASE $base_datos";
             if (!$this->conn->query($sql)) {
                 die("Error al crear la base de datos: " . $this->conn->error);
             }
         }
 
-        // Seleccionar la base de datos
+        // elijo la base de datos
         $this->conn->select_db($base_datos);
 
-        // Crear la tabla `clientes` si no existe
+        // creo la tabla clientes si no existe
         $sql = "CREATE TABLE IF NOT EXISTS clientes (
             id INT AUTO_INCREMENT PRIMARY KEY,
             nombre VARCHAR(255) NOT NULL

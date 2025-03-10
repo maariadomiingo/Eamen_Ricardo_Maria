@@ -1,5 +1,7 @@
 <?php
 // Carrito.php
+
+//@authotr:Ricardo Gómez 
 require_once 'Producto.php';
 
 class Carrito {
