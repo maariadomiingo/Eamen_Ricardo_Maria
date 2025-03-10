@@ -2,7 +2,7 @@
 //@author: María Domingo
 use PHPUnit\Framework\TestCase;
 
-require_once 'C:/xampp/htdocs/PHPUnit_Ricardo_Maria/src/NombreBBDD.php'; // Incluir la clase
+require_once __DIR__ . '/../src/NombreBBDD.php'; // Incluir la clase
 
 class NombreTest extends TestCase
 {
